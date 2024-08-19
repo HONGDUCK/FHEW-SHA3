@@ -6,7 +6,7 @@ We implement sha3 algorithm with <a href="https://github.com/openfheorg/openfhe-
 
 * Clone this repository
 ```
-git clone ---
+git clone https://github.com/HONGDUCK/FHEW-SHA3.git
 ```
 
 * Change directory and build cmake
