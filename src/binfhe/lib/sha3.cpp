@@ -187,7 +187,7 @@ void SHA3::theta(){
     sha_state D(5);
 
     // C[x] = A[x,0] ⊕ A[x,1] ⊕ A[x,2] ⊕ A[x,3] ⊕ A[x,4]
-// #pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(5))
+#pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(this->number_of_thread))
     for(size_t i=0; i<5; i++){
         C[i] = bitwiseXor( H[i +  0],
                bitwiseXor( H[i +  5],
@@ -196,13 +196,13 @@ void SHA3::theta(){
     }
 
     // D[x] = C[x−1] ⊕ rotation(C[x+1],1) in Z_q
-// #pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(5))
+#pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(this->number_of_thread))
     for(size_t i=0; i<5; i++){
         D[i] = bitwiseXor( C[u_mod(i-1, 5)], temp_rotate_left(C[u_mod(i+1, 5)],1), 2); 
     }
 
     // A[x,y] = A[x,y] ⊕ D[x]
-// #pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(5))
+#pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(this->number_of_thread))
     for(size_t i=0; i<5; i++){
         // Bootstrapping :: q/2 --> q/4
         H[i]      = bitwiseXor(H[i],      D[i], 4);
@@ -248,7 +248,7 @@ void SHA3::pi(){
     H[17] = H[11], H[11] = H[ 7], H[ 7] = H[10], H[10] = H1;
 }
 void SHA3::chi(){
-    // #pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(5))
+#pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(this->number_of_thread))
     for(size_t i=0; i<25; i+=5){
         vec_LWE a_0 = create_copy(H[0 + i]), a_1 = create_copy(H[1 + i]), 
                 a_2 = create_copy(H[2 + i]), a_3 = create_copy(H[3 + i]), 

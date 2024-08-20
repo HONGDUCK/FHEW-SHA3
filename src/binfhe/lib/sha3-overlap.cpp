@@ -165,20 +165,20 @@ vec_LWE SHA3_OverLap::create_copy(vec_LWE const &vec){
     return v;
 }
 void SHA3_OverLap::blindrotation_state(sha_state& A, PlaintextModulus p){
+#pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(this->number_of_thread))
     for(size_t i=0; i<A.size(); i++){
         for(size_t j=0; j<A[i].size(); j++){
             A[i][j] = cc.EvalBinGate_overlap(XOR, A[i][j], p);
         }
     }
-    // return A;
 }
 void SHA3_OverLap::MKMSwitch_state(sha_state& A, PlaintextModulus p){
+#pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(this->number_of_thread))
     for(size_t i=0; i<A.size(); i++){
         for(size_t j=0; j<A[i].size(); j++){
             A[i][j] = cc.MKMSwitch_overlap(A[i][j], p);
         }
     }
-    // return A;    
 }
 void SHA3_OverLap::printstate(PlaintextModulus p, LWEPrivateKey sk){
     for(int i=0; i<=16; i++){

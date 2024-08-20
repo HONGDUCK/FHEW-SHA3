@@ -137,6 +137,14 @@ public:
     void init(BinFHEContext cc){
         this->cc = cc;
     }
+    
+    /**
+     * Set number of thread using calculation
+     * Default value is 1
+     */
+    void set_multi_threads(int num){
+        this->number_of_thread = num;
+    }
 
 private:
     /**
@@ -163,6 +171,12 @@ private:
      * Current state H
      */
     sha_state H;
+
+    /**
+     * Number of threads
+     * Default : 1
+     */
+    int number_of_thread = 1;
 
     BinFHEContext cc;
 };
