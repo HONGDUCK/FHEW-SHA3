@@ -1,1 +1,0 @@
-/usr/bin/c++  -Wall -Werror -O3  -DOPENFHE_VERSION=1.1.4 -Wno-parentheses -DMATHBACKEND=4 -fopenmp -O3 -DNDEBUG CMakeFiles/sha3_example.dir/examples/sha3_example.cpp.o -o ../../bin/examples/binfhe/sha3_example  -Wl,-rpath,/home/deokhwa/dev/sha3/openfhe-development/lib ../../lib/libOPENFHEbinfhe.so.1.1.4 ../../lib/libOPENFHEcore.so.1.1.4 -fopenmp 

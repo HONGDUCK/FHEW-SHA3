@@ -1,1 +1,0 @@
-/usr/bin/c++  -Wall -Werror -O3  -DOPENFHE_VERSION=1.1.4 -Wno-parentheses -DMATHBACKEND=4 -fopenmp -O3 -DNDEBUG CMakeFiles/eval-function-pke.dir/examples/pke/eval-function-pke.cpp.o -o ../../bin/examples/binfhe/pke/eval-function-pke  -Wl,-rpath,/home/deokhwa/dev/sha3/openfhe-development/lib ../../lib/libOPENFHEbinfhe.so.1.1.4 ../../lib/libOPENFHEcore.so.1.1.4 -fopenmp 

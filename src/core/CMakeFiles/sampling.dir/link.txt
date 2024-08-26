@@ -1,1 +1,0 @@
-/usr/bin/c++  -Wall -Werror -O3  -DOPENFHE_VERSION=1.1.4 -Wno-parentheses -DMATHBACKEND=4 -fopenmp -O3 -DNDEBUG CMakeFiles/sampling.dir/examples/sampling.cpp.o -o ../../bin/examples/core/sampling  -Wl,-rpath,/home/deokhwa/dev/sha3/openfhe-development/lib ../../lib/libOPENFHEcore.so.1.1.4 -fopenmp 
