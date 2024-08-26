@@ -146,6 +146,15 @@ public:
         this->number_of_thread = num;
     }
 
+    /**
+     * Set debug mode ture.
+     * You can print state while running sha3 algorithm
+     */
+    void set_Debug_mode(LWEPrivateKey sk){
+        this->sk = sk;
+        this->debug_mode = true;
+    }
+
 private:
     /**
      * Message
@@ -177,6 +186,13 @@ private:
      * Default : 1
      */
     int number_of_thread = 1;
+
+    /**
+     * For Debugging
+     * Default : false
+     */
+    LWEPrivateKey sk;
+    bool debug_mode = false;
 
     BinFHEContext cc;
 };

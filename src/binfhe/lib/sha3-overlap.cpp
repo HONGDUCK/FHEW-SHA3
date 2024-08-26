@@ -358,20 +358,34 @@ void SHA3_OverLap::state_gen(string data, ConstLWEPrivateKey sk){
 void SHA3_OverLap::round_function(){
     for(size_t i=0; i<24; i++){
         this->theta();
-        // cout << "After Theta\n";
-        // printstate(4, sk);
+        if(this->debug_mode){
+            cout << "After Theta\n";
+            printstate(4, sk);
+        }
+
         this->rho();
-        // cout << "After rho\n";
-        // printstate(4, sk);        
+        if(this->debug_mode){
+            cout << "After rho\n";
+            printstate(4, sk);        
+        }
+
         this->pi();
-        // cout << "After pi\n";
-        // printstate(4, sk);
+        if(this->debug_mode){
+            cout << "After pi\n";
+            printstate(4, sk);
+        }
+
         this->chi();
-        // cout << "After chi\n";
-        // printstate(2, sk);
+        if(this->debug_mode){
+            cout << "After chi\n";
+            printstate(2, sk);
+        }
+
         this->iota(i);
-        // cout << "After iota\n";
-        // printstate(2, sk);
+        if(this->debug_mode){
+            cout << "After iota\n";
+            printstate(2, sk);
+        }
     }
 }
 void SHA3_OverLap::building_hash(vec_LWE ct, size_t start_index){

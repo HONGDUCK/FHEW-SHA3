@@ -148,9 +148,8 @@ public:
      * Initialize BinFHEContext
      * Initialize secret key for debugging
      */
-    void init(BinFHEContext cc, LWEPrivateKey sk){
+    void init(BinFHEContext cc){
         this->cc = cc;
-        this->sk = sk;
     }
 
     /**
@@ -159,6 +158,15 @@ public:
      */
     void set_multi_threads(int num){
         this->number_of_thread = num;
+    }
+
+    /**
+     * Set debug mode ture.
+     * You can print state while running sha3 algorithm
+     */
+    void set_Debug_mode(LWEPrivateKey sk){
+        this->sk = sk;
+        this->debug_mode = true;
     }
 
 private:
@@ -193,8 +201,14 @@ private:
      */
     int number_of_thread = 1;
 
-    BinFHEContext cc;
+    /**
+     * For Debugging
+     * Default : false
+     */
     LWEPrivateKey sk;
+    bool debug_mode = false;
+    
+    BinFHEContext cc;
 };
 
 #endif // SHA3_H_OverLap

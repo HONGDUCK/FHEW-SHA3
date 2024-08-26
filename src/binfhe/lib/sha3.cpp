@@ -331,10 +331,34 @@ void SHA3::state_gen(string data, ConstLWEPrivateKey sk){
 void SHA3::round_function(){
     for(size_t i=0; i<24; i++){
         this->theta();
+        if(this->debug_mode){
+            cout << "After Theta\n";
+            printstate(4, sk);
+        }
+
         this->rho();
+        if(this->debug_mode){
+            cout << "After rho\n";
+            printstate(4, sk);        
+        }
+
         this->pi();
+        if(this->debug_mode){
+            cout << "After pi\n";
+            printstate(4, sk);
+        }
+
         this->chi();
+        if(this->debug_mode){
+            cout << "After chi\n";
+            printstate(2, sk);
+        }
+
         this->iota(i);
+        if(this->debug_mode){
+            cout << "After iota\n";
+            printstate(2, sk);
+        }
     }
 }
 void SHA3::building_hash(vec_LWE ct, size_t start_index){
