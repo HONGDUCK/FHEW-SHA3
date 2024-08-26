@@ -117,7 +117,6 @@ vec_LWE SHA3::bitwiseXor(vec_LWE ct1, vec_LWE ct2, PlaintextModulus p){
     return temp;
 }
 vec_LWE SHA3::bitwiseNot(vec_LWE ct1){
-    // for 4/q
     vec_LWE temp;
     size_t ctLen = ct1.size();
 
@@ -128,10 +127,6 @@ vec_LWE SHA3::bitwiseNot(vec_LWE ct1){
     return temp;
 }
 vec_LWE SHA3::bitwiseAnd(vec_LWE ct1, vec_LWE ct2){
-    /**
-     * 64비트 타겟, bitwise AND 연산
-     * Parallel?
-    */
     vec_LWE temp;
     size_t ctLen = ct1.size();
 
@@ -144,10 +139,9 @@ vec_LWE SHA3::bitwiseAnd(vec_LWE ct1, vec_LWE ct2){
 vec_LWE SHA3::create_copy(vec_LWE const &vec){
     vec_LWE v;
     for (size_t i = 0; i < vec.size(); i++){
-        auto ct = cc.EvalNOT(vec[i]);
-        ct = cc.EvalNOT(ct);
-
-        v.push_back(ct);
+        LWECiphertext ctTemp = make_shared<LWECiphertextImpl>(*vec[i]);
+        ctTemp->SetptModulus(vec[i]->GetptModulus());
+        v.push_back(ctTemp);
     }
 
     return v;
@@ -187,7 +181,7 @@ void SHA3::theta(){
     sha_state D(5);
 
     // C[x] = A[x,0] ⊕ A[x,1] ⊕ A[x,2] ⊕ A[x,3] ⊕ A[x,4]
-// #pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(5))
+#pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(this->number_of_thread))
     for(size_t i=0; i<5; i++){
         C[i] = bitwiseXor( H[i +  0],
                bitwiseXor( H[i +  5],
@@ -196,13 +190,13 @@ void SHA3::theta(){
     }
 
     // D[x] = C[x−1] ⊕ rotation(C[x+1],1) in Z_q
-// #pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(5))
+#pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(this->number_of_thread))
     for(size_t i=0; i<5; i++){
         D[i] = bitwiseXor( C[u_mod(i-1, 5)], temp_rotate_left(C[u_mod(i+1, 5)],1), 2); 
     }
 
     // A[x,y] = A[x,y] ⊕ D[x]
-// #pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(5))
+#pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(this->number_of_thread))
     for(size_t i=0; i<5; i++){
         // Bootstrapping :: q/2 --> q/4
         H[i]      = bitwiseXor(H[i],      D[i], 4);
@@ -248,7 +242,7 @@ void SHA3::pi(){
     H[17] = H[11], H[11] = H[ 7], H[ 7] = H[10], H[10] = H1;
 }
 void SHA3::chi(){
-    // #pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(5))
+#pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(this->number_of_thread))
     for(size_t i=0; i<25; i+=5){
         vec_LWE a_0 = create_copy(H[0 + i]), a_1 = create_copy(H[1 + i]), 
                 a_2 = create_copy(H[2 + i]), a_3 = create_copy(H[3 + i]), 
@@ -256,7 +250,6 @@ void SHA3::chi(){
 
         vec_LWE A0 = create_copy(H[0 + i]), A1 = create_copy(H[1 + i]);
 
-        // 비효율?
         auto len = a_0[0]->GetA().GetLength();
         auto mod = a_0[0]->GetModulus();
         NativeVector v(len, mod, 2);
@@ -338,10 +331,34 @@ void SHA3::state_gen(string data, ConstLWEPrivateKey sk){
 void SHA3::round_function(){
     for(size_t i=0; i<24; i++){
         this->theta();
+        if(this->debug_mode){
+            cout << "After Theta\n";
+            printstate(4, sk);
+        }
+
         this->rho();
+        if(this->debug_mode){
+            cout << "After rho\n";
+            printstate(4, sk);        
+        }
+
         this->pi();
+        if(this->debug_mode){
+            cout << "After pi\n";
+            printstate(4, sk);
+        }
+
         this->chi();
+        if(this->debug_mode){
+            cout << "After chi\n";
+            printstate(2, sk);
+        }
+
         this->iota(i);
+        if(this->debug_mode){
+            cout << "After iota\n";
+            printstate(2, sk);
+        }
     }
 }
 void SHA3::building_hash(vec_LWE ct, size_t start_index){

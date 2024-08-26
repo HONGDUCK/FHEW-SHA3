@@ -8,10 +8,6 @@ int u_mod_O(int x, int modN){
     }
 }
 void rotate_left_O(vec_LWE& ct, size_t index){
-    /**
-     * 64bit 구격
-     * */
-
     size_t ctLen = ct.size();
     index %= ctLen;
     
@@ -33,10 +29,6 @@ void rotate_left_O(vec_LWE& ct, size_t index){
     }    
 }
 vec_LWE temp_rotate_left_O(vec_LWE ct, size_t index){
-    /**
-     * 64bit 구격
-     * */    
-
     size_t ctLen = ct.size();
     index %= ctLen;
     
@@ -140,10 +132,6 @@ vec_LWE SHA3_OverLap::bitwiseNot(vec_LWE ct1){
     return temp;
 }
 vec_LWE SHA3_OverLap::bitwiseAnd(vec_LWE ct1, vec_LWE ct2){
-    /**
-     * 64비트 타겟, bitwise AND 연산
-     * Parallel?
-    */
     vec_LWE temp;
     size_t ctLen = ct1.size();
 
@@ -156,29 +144,28 @@ vec_LWE SHA3_OverLap::bitwiseAnd(vec_LWE ct1, vec_LWE ct2){
 vec_LWE SHA3_OverLap::create_copy(vec_LWE const &vec){
     vec_LWE v;
     for (size_t i = 0; i < vec.size(); i++){
-        auto ct = cc.EvalNOT(vec[i]);
-        ct = cc.EvalNOT(ct);
-
-        v.push_back(ct);
+        LWECiphertext ctTemp = make_shared<LWECiphertextImpl>(*vec[i]);
+        ctTemp->SetptModulus(vec[i]->GetptModulus());
+        v.push_back(ctTemp);
     }
 
     return v;
 }
 void SHA3_OverLap::blindrotation_state(sha_state& A, PlaintextModulus p){
+#pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(this->number_of_thread))
     for(size_t i=0; i<A.size(); i++){
         for(size_t j=0; j<A[i].size(); j++){
             A[i][j] = cc.EvalBinGate_overlap(XOR, A[i][j], p);
         }
     }
-    // return A;
 }
 void SHA3_OverLap::MKMSwitch_state(sha_state& A, PlaintextModulus p){
+#pragma omp parallel for num_threads(OpenFHEParallelControls.GetThreadLimit(this->number_of_thread))
     for(size_t i=0; i<A.size(); i++){
         for(size_t j=0; j<A[i].size(); j++){
             A[i][j] = cc.MKMSwitch_overlap(A[i][j], p);
         }
     }
-    // return A;    
 }
 void SHA3_OverLap::printstate(PlaintextModulus p, LWEPrivateKey sk){
     for(int i=0; i<=16; i++){
@@ -287,7 +274,6 @@ void SHA3_OverLap::chi(){
 
         vec_LWE A0 = create_copy(H[0 + i]), A1 = create_copy(H[1 + i]);
 
-        // 비효율?
         auto len = a_0[0]->GetA().GetLength();
         auto mod = a_0[0]->GetModulus();
         NativeVector v(len, mod, 2);
@@ -372,20 +358,34 @@ void SHA3_OverLap::state_gen(string data, ConstLWEPrivateKey sk){
 void SHA3_OverLap::round_function(){
     for(size_t i=0; i<24; i++){
         this->theta();
-        // cout << "After Theta\n";
-        // printstate(4, sk);
+        if(this->debug_mode){
+            cout << "After Theta\n";
+            printstate(4, sk);
+        }
+
         this->rho();
-        // cout << "After rho\n";
-        // printstate(4, sk);        
+        if(this->debug_mode){
+            cout << "After rho\n";
+            printstate(4, sk);        
+        }
+
         this->pi();
-        // cout << "After pi\n";
-        // printstate(4, sk);
+        if(this->debug_mode){
+            cout << "After pi\n";
+            printstate(4, sk);
+        }
+
         this->chi();
-        // cout << "After chi\n";
-        // printstate(2, sk);
+        if(this->debug_mode){
+            cout << "After chi\n";
+            printstate(2, sk);
+        }
+
         this->iota(i);
-        // cout << "After iota\n";
-        // printstate(2, sk);
+        if(this->debug_mode){
+            cout << "After iota\n";
+            printstate(2, sk);
+        }
     }
 }
 void SHA3_OverLap::building_hash(vec_LWE ct, size_t start_index){
