@@ -117,7 +117,6 @@ vec_LWE SHA3::bitwiseXor(vec_LWE ct1, vec_LWE ct2, PlaintextModulus p){
     return temp;
 }
 vec_LWE SHA3::bitwiseNot(vec_LWE ct1){
-    // for 4/q
     vec_LWE temp;
     size_t ctLen = ct1.size();
 
@@ -128,10 +127,6 @@ vec_LWE SHA3::bitwiseNot(vec_LWE ct1){
     return temp;
 }
 vec_LWE SHA3::bitwiseAnd(vec_LWE ct1, vec_LWE ct2){
-    /**
-     * 64비트 타겟, bitwise AND 연산
-     * Parallel?
-    */
     vec_LWE temp;
     size_t ctLen = ct1.size();
 
@@ -144,10 +139,9 @@ vec_LWE SHA3::bitwiseAnd(vec_LWE ct1, vec_LWE ct2){
 vec_LWE SHA3::create_copy(vec_LWE const &vec){
     vec_LWE v;
     for (size_t i = 0; i < vec.size(); i++){
-        auto ct = cc.EvalNOT(vec[i]);
-        ct = cc.EvalNOT(ct);
-
-        v.push_back(ct);
+        LWECiphertext ctTemp = make_shared<LWECiphertextImpl>(*vec[i]);
+        ctTemp->SetptModulus(vec[i]->GetptModulus());
+        v.push_back(ctTemp);
     }
 
     return v;
@@ -256,7 +250,6 @@ void SHA3::chi(){
 
         vec_LWE A0 = create_copy(H[0 + i]), A1 = create_copy(H[1 + i]);
 
-        // 비효율?
         auto len = a_0[0]->GetA().GetLength();
         auto mod = a_0[0]->GetModulus();
         NativeVector v(len, mod, 2);
