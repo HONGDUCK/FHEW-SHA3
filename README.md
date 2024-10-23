@@ -1,6 +1,7 @@
 # FHEW-SHA3 : SHA3 with fully homomorphic encryption
 
 We implement sha3 algorithm with <a href="https://github.com/openfheorg/openfhe-development"> OpenFHE library</a> v 1.2.0.
+To make it efficient, we use overlapped bootstrapping : <a href="https://eprint.iacr.org/2024/1667"> ref </a>.
 
 # How to Run
 
