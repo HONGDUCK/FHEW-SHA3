@@ -7,7 +7,7 @@ To make it efficient, we use <a href="https://eprint.iacr.org/2024/1667"> overla
 
 * Clone this repository
 ```
-git clone https://github.com/HONGDUCK/FHEW-SHA3.git
+git clone https://github.com/HONGDUCK/SHA3-with-FHE.git
 ```
 
 * Change directory and build cmake
